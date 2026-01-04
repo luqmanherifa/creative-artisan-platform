@@ -24,13 +24,15 @@ func main() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	if err := db.AutoMigrate(&models.User{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.Creator{}, &models.Artwork{}); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
 	}
-	log.Println("migration completed: users table")
+	log.Println("migration completed: users, creators, artworks")
 
 	userHandler := handlers.NewUserHandler(db)
 	authHandler := handlers.NewAuthHandler(db)
+	creatorHandler := handlers.NewCreatorHandler(db)
+	artworkHandler := handlers.NewArtworkHandler(db)
 
 	mux := http.NewServeMux()
 
@@ -63,6 +65,44 @@ func main() {
 			}
 			userHandler.GetUser(w, r)
 		}),
+		[]string{"admin", "creator", "client"},
+	))
+
+	mux.Handle("/creators", middleware.AuthMiddleware(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case http.MethodGet:
+				creatorHandler.ListCreators(w, r)
+			case http.MethodPost:
+				creatorHandler.CreateCreator(w, r)
+			default:
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			}
+		}),
+		[]string{"admin", "creator"},
+	))
+
+	mux.Handle("/creator", middleware.AuthMiddleware(
+		http.HandlerFunc(creatorHandler.GetCreator),
+		[]string{"admin", "creator", "client"},
+	))
+
+	mux.Handle("/artworks", middleware.AuthMiddleware(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case http.MethodGet:
+				artworkHandler.ListArtworks(w, r)
+			case http.MethodPost:
+				artworkHandler.CreateArtwork(w, r)
+			default:
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			}
+		}),
+		[]string{"admin", "creator"},
+	))
+
+	mux.Handle("/artwork", middleware.AuthMiddleware(
+		http.HandlerFunc(artworkHandler.GetArtwork),
 		[]string{"admin", "creator", "client"},
 	))
 
