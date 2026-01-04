@@ -1,0 +1,19 @@
+# env
+.env
+
+# go
+/bin/
+/vendor/
+*.exe
+*.test
+
+# node
+node_modules/
+
+# docker
+*.log
+
+# editor
+.vscode/
+.idea/
+.DS_Store
