@@ -12,6 +12,7 @@ import (
 	"github.com/luqmanherifa/creative-artisan-platform/internal/config"
 	"github.com/luqmanherifa/creative-artisan-platform/internal/database"
 	"github.com/luqmanherifa/creative-artisan-platform/internal/handlers"
+	"github.com/luqmanherifa/creative-artisan-platform/internal/middleware"
 	"github.com/luqmanherifa/creative-artisan-platform/models"
 )
 
@@ -28,33 +29,42 @@ func main() {
 	}
 	log.Println("migration completed: users table")
 
-	mux := http.NewServeMux()
-
 	userHandler := handlers.NewUserHandler(db)
+	authHandler := handlers.NewAuthHandler(db)
 
-	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			userHandler.ListUsers(w, r)
-		case http.MethodPost:
-			userHandler.CreateUser(w, r)
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	mux.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		userHandler.GetUser(w, r)
-	})
+	mux := http.NewServeMux()
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
+
+	mux.HandleFunc("/login", authHandler.Login)
+
+	mux.Handle("/users", middleware.AuthMiddleware(
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					switch r.Method {
+					case http.MethodGet:
+							userHandler.ListUsers(w, r)
+					case http.MethodPost:
+							userHandler.CreateUser(w, r)
+					default:
+							http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+					}
+			}),
+			[]string{"admin"},
+	))
+
+	mux.Handle("/user", middleware.AuthMiddleware(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet {
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+			userHandler.GetUser(w, r)
+		}),
+		[]string{"admin", "creator", "client"},
+	))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
