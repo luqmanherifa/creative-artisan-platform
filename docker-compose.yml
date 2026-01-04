@@ -1,0 +1,7 @@
+services:
+  api:
+    build:
+      context: ./backend
+    container_name: creative_artisan_api
+    ports:
+      - "8080:8080"
