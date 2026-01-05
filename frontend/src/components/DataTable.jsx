@@ -1,4 +1,10 @@
-export default function DataTable({ data, onSelect, emptyMessage }) {
+export default function DataTable({
+  data,
+  onSelect,
+  onEdit,
+  onDelete,
+  emptyMessage,
+}) {
   if (!Array.isArray(data)) {
     return <p className="text-sm text-red-500">Invalid data</p>;
   }
@@ -22,6 +28,7 @@ export default function DataTable({ data, onSelect, emptyMessage }) {
               {col}
             </th>
           ))}
+          <th className="border px-2 py-1 text-left">Aksi</th>
         </tr>
       </thead>
 
@@ -34,16 +41,40 @@ export default function DataTable({ data, onSelect, emptyMessage }) {
           }
 
           return (
-            <tr
-              key={rowKey}
-              className="cursor-pointer hover:bg-gray-100"
-              onClick={() => onSelect?.(row)}
-            >
+            <tr key={rowKey} className="hover:bg-gray-50">
               {columns.map((col) => (
                 <td key={`${rowKey}-${col}`} className="border px-2 py-1">
                   {String(row[col])}
                 </td>
               ))}
+              <td className="border px-2 py-1">
+                <div className="flex gap-2">
+                  {onSelect && (
+                    <button
+                      onClick={() => onSelect(row)}
+                      className="text-blue-600 hover:text-blue-800 text-xs underline"
+                    >
+                      Rincian
+                    </button>
+                  )}
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(row)}
+                      className="text-green-600 hover:text-green-800 text-xs underline"
+                    >
+                      Ubah
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={() => onDelete(row)}
+                      className="text-red-600 hover:text-red-800 text-xs underline"
+                    >
+                      Hapus
+                    </button>
+                  )}
+                </div>
+              </td>
             </tr>
           );
         })}

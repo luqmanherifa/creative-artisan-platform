@@ -133,8 +133,37 @@ export default function Dashboard() {
                   <DataTable
                     data={users}
                     onSelect={(u) =>
+                      setModal({ type: "User", mode: "view", data: u })
+                    }
+                    onEdit={(u) =>
                       setModal({ type: "User", mode: "edit", data: u })
                     }
+                    onDelete={async (u) => {
+                      const userId = u.ID || u.id;
+                      if (!userId) {
+                        alert("User ID tidak ditemukan");
+                        return;
+                      }
+
+                      if (confirm(`Hapus user ${u.username || u.name}?`)) {
+                        try {
+                          await apiFetch(`/users/delete?id=${userId}`, {
+                            method: "DELETE",
+                          });
+
+                          const updatedUsers = await apiFetch("/users");
+                          setUsers(updatedUsers);
+
+                          alert("User berhasil dihapus");
+                        } catch (error) {
+                          console.error("Error deleting user:", error);
+                          alert(
+                            "Gagal menghapus user: " +
+                              (error.message || "Unknown error")
+                          );
+                        }
+                      }
+                    }}
                   />
                 </Section>
               </div>
