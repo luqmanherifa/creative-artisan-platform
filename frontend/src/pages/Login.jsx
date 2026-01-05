@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
-export default function Login({ onLogin }) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
@@ -19,8 +21,9 @@ export default function Login({ onLogin }) {
       if (!res.ok) throw new Error("login failed");
 
       const data = await res.json();
+
       localStorage.setItem("token", data.token);
-      onLogin();
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     }
@@ -29,23 +32,31 @@ export default function Login({ onLogin }) {
   return (
     <form onSubmit={submit} className="p-6 max-w-sm">
       <h1 className="text-xl font-bold mb-4">Login</h1>
-      {error && <p className="text-red-500">{error}</p>}
+
+      {error && <p className="text-red-500 mb-2">{error}</p>}
 
       <input
         className="border p-2 w-full mb-2"
         placeholder="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        required
       />
+
       <input
         type="password"
         className="border p-2 w-full mb-2"
         placeholder="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        required
       />
 
-      <button className="border px-4 py-2">Login</button>
+      <button className="border px-4 py-2 w-full mb-2">Login</button>
+
+      <Link to="/register" className="text-sm underline">
+        Create account
+      </Link>
     </form>
   );
 }

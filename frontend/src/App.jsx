@@ -1,18 +1,37 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import { isAuthenticated } from "./utils/auth";
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            isAuthenticated() ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setLoggedIn(false);
-  };
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-  if (!loggedIn) {
-    return <Login onLogin={() => setLoggedIn(true)} />;
-  }
-
-  return <Dashboard onLogout={logout} />;
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 }
