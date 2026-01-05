@@ -132,6 +132,16 @@ func registerProtectedRoutes(
 		[]string{"admin", "creator", "client"},
 	))
 
+	mux.Handle("/creators/update", middleware.AuthMiddleware(
+		http.HandlerFunc(creator.UpdateCreator),
+		[]string{"admin"},
+	))
+
+	mux.Handle("/creators/delete", middleware.AuthMiddleware(
+		http.HandlerFunc(creator.DeleteCreator),
+		[]string{"admin"},
+	))
+
 	// Artworks
 	mux.Handle("/artworks", middleware.AuthMiddleware(
 		methodHandler(map[string]http.HandlerFunc{
@@ -177,7 +187,7 @@ func methodHandler(handlers map[string]http.HandlerFunc) http.Handler {
 	})
 }
 
-// Server Start and Shutdown
+// Server Start/Shutdown
 func startServer(server *http.Server, cfg *config.Config) {
 	go func() {
 		log.Printf("%s running on :%s", cfg.AppName, cfg.Port)

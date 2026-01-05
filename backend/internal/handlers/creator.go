@@ -69,3 +69,60 @@ func (h *CreatorHandler) GetCreator(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(creator)
 }
+
+// Update Creator (Admin/Creator)
+func (h *CreatorHandler) UpdateCreator(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	var creator models.Creator
+	if err := h.DB.First(&creator, id).Error; err != nil {
+		http.Error(w, "creator not found", http.StatusNotFound)
+		return
+	}
+
+	var input struct {
+		UserID  uint   `json:"user_id"`
+		Bio     string `json:"bio"`
+		Website string `json:"website"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "invalid input", http.StatusBadRequest)
+		return
+	}
+
+	creator.UserID = input.UserID
+	creator.Bio = input.Bio
+	creator.Website = input.Website
+
+	if err := h.DB.Save(&creator).Error; err != nil {
+		http.Error(w, "update failed", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(creator)
+}
+
+// Delete Creator (Admin)
+func (h *CreatorHandler) DeleteCreator(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.DB.Unscoped().Delete(&models.Creator{}, id).Error; err != nil {
+		http.Error(w, "failed to delete creator", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "creator deleted",
+	})
+}
