@@ -145,9 +145,9 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.DB.Delete(&models.User{}, id).Error; err != nil {
-		http.Error(w, "failed to delete user", http.StatusInternalServerError)
-		return
+	if err := h.DB.Unscoped().Delete(&models.User{}, id).Error; err != nil {
+			http.Error(w, "failed to delete user", http.StatusInternalServerError)
+			return
 	}
 
 	w.WriteHeader(http.StatusOK)
