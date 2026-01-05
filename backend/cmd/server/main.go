@@ -139,7 +139,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
-		Handler: mux,
+		Handler: middleware.CORSMiddleware(mux),
 	}
 
 	quit := make(chan os.Signal, 1)
