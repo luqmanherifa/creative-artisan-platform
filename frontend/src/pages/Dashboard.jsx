@@ -84,6 +84,27 @@ export default function Dashboard() {
     return location.pathname === `/dashboard/${menuKey}`;
   };
 
+  const handleCreateCreator = async () => {
+    const userId = prompt("Enter User ID for the creator:");
+    const bio = prompt("Enter bio:");
+    const website = prompt("Enter website URL:");
+
+    if (!userId) return alert("User ID diperlukan");
+
+    try {
+      const newCreator = await apiFetch("/creators", {
+        method: "POST",
+        body: JSON.stringify({ user_id: Number(userId), bio, website }),
+      });
+
+      setCreators((prev) => [...prev, newCreator]);
+      alert("Creator berhasil ditambahkan!");
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menambahkan creator: " + (err.message || "Unknown error"));
+    }
+  };
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -123,7 +144,7 @@ export default function Dashboard() {
                   title="Users"
                   action={
                     <button
-                      className="border px-3 py-1 text-sm"
+                      className="border px-3 py-1 text-sm bg-blue-500 text-white rounded"
                       onClick={() => setModal({ type: "User", mode: "create" })}
                     >
                       + Add User
@@ -178,10 +199,8 @@ export default function Dashboard() {
                   title="Creators"
                   action={
                     <button
-                      className="border px-3 py-1 text-sm"
-                      onClick={() =>
-                        setModal({ type: "Creator", mode: "create" })
-                      }
+                      className="border px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                      onClick={handleCreateCreator}
                     >
                       + Add Creator
                     </button>
