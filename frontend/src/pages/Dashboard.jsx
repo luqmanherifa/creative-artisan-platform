@@ -47,10 +47,20 @@ export default function Dashboard({ onLogout }) {
         Logout
       </button>
 
-      <Section title="Users">
+      <Section
+        title="Users"
+        action={
+          <button
+            className="border px-3 py-1 text-sm"
+            onClick={() => setModal({ type: "User", mode: "create" })}
+          >
+            + Add User
+          </button>
+        }
+      >
         <DataTable
           data={users}
-          onSelect={(u) => setModal({ type: "User", u })}
+          onSelect={(u) => setModal({ type: "User", mode: "edit", data: u })}
         />
       </Section>
 
@@ -77,8 +87,13 @@ export default function Dashboard({ onLogout }) {
 
       <DataModal
         title={modal?.type}
-        data={modal?.u || modal?.c || modal?.a || modal?.r}
+        mode={modal?.mode}
+        data={modal?.data}
         onClose={() => setModal(null)}
+        onSuccess={async () => {
+          const users = await apiFetch("/users");
+          setUsers(users);
+        }}
       />
     </div>
   );
