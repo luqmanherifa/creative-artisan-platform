@@ -107,7 +107,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
       <aside className="w-48 border-r p-4 space-y-2">
         <h2 className="font-bold mb-4">Dashboard</h2>
 
@@ -131,11 +130,9 @@ export default function Dashboard() {
         </button>
       </aside>
 
-      {/* Content */}
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Welcome />} />
-
           <Route
             path="/users"
             element={
@@ -144,7 +141,7 @@ export default function Dashboard() {
                   title="Users"
                   action={
                     <button
-                      className="border px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                      className="border px-3 py-1 text-sm"
                       onClick={() => setModal({ type: "User", mode: "create" })}
                     >
                       + Add User
@@ -160,13 +157,13 @@ export default function Dashboard() {
                       setModal({ type: "User", mode: "edit", data: u })
                     }
                     onDelete={async (u) => {
-                      const userId = u.ID || u.id;
+                      const userId = u.id || u.ID;
                       if (!userId) {
                         alert("User ID tidak ditemukan");
                         return;
                       }
 
-                      if (confirm(`Hapus user ${u.username || u.name}?`)) {
+                      if (confirm(`Hapus user ${u.username}?`)) {
                         try {
                           await apiFetch(`/users/delete?id=${userId}`, {
                             method: "DELETE",
@@ -190,7 +187,6 @@ export default function Dashboard() {
               </div>
             }
           />
-
           <Route
             path="/creators"
             element={
@@ -199,8 +195,10 @@ export default function Dashboard() {
                   title="Creators"
                   action={
                     <button
-                      className="border px-3 py-1 text-sm bg-blue-500 text-white rounded"
-                      onClick={handleCreateCreator}
+                      className="border px-3 py-1 text-sm"
+                      onClick={() =>
+                        setModal({ type: "Creator", mode: "create" })
+                      }
                     >
                       + Add Creator
                     </button>
@@ -245,18 +243,62 @@ export default function Dashboard() {
               </div>
             }
           />
-
           <Route
             path="/artworks"
             element={
               <div className="p-6">
-                <Section title="Artworks">
-                  <DataTable data={artworks} />
+                <Section
+                  title="Artworks"
+                  action={
+                    <button
+                      className="border px-3 py-1 text-sm"
+                      onClick={() =>
+                        setModal({ type: "Artwork", mode: "create" })
+                      }
+                    >
+                      + Add Artwork
+                    </button>
+                  }
+                >
+                  <DataTable
+                    data={artworks}
+                    onSelect={(a) =>
+                      setModal({ type: "Artwork", mode: "view", data: a })
+                    }
+                    onEdit={(a) =>
+                      setModal({ type: "Artwork", mode: "edit", data: a })
+                    }
+                    onDelete={async (a) => {
+                      const artworkId = a.id || a.ID;
+                      if (!artworkId) {
+                        alert("Artwork ID tidak ditemukan");
+                        return;
+                      }
+
+                      if (confirm(`Hapus artwork "${a.title}"?`)) {
+                        try {
+                          await apiFetch(`/artworks/delete?id=${artworkId}`, {
+                            method: "DELETE",
+                          });
+
+                          const updatedArtworks = await apiFetch("/artworks");
+                          setArtworks(updatedArtworks);
+
+                          alert("Artwork berhasil dihapus");
+                        } catch (error) {
+                          console.error("Error deleting artwork:", error);
+                          alert(
+                            "Gagal menghapus artwork: " +
+                              (error.message || "Unknown error")
+                          );
+                        }
+                      }
+                    }}
+                  />
                 </Section>
               </div>
             }
           />
-
           <Route
             path="/requests"
             element={
@@ -276,8 +318,16 @@ export default function Dashboard() {
         data={modal?.data}
         onClose={() => setModal(null)}
         onSuccess={async () => {
-          const users = await apiFetch("/users");
-          setUsers(users);
+          if (modal?.type === "User") {
+            const updatedUsers = await apiFetch("/users");
+            setUsers(updatedUsers);
+          } else if (modal?.type === "Creator") {
+            const updatedCreators = await apiFetch("/creators");
+            setCreators(updatedCreators);
+          } else if (modal?.type === "Artwork") {
+            const updatedArtworks = await apiFetch("/artworks");
+            setArtworks(updatedArtworks);
+          }
         }}
       />
     </div>
