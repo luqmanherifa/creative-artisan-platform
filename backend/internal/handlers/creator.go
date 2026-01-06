@@ -70,7 +70,6 @@ func (h *CreatorHandler) GetCreator(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(creator)
 }
 
-// Update Creator (Admin/Creator)
 func (h *CreatorHandler) UpdateCreator(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
@@ -108,7 +107,6 @@ func (h *CreatorHandler) UpdateCreator(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(creator)
 }
 
-// Delete Creator (Admin)
 func (h *CreatorHandler) DeleteCreator(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {

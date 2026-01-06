@@ -18,7 +18,6 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 	return &UserHandler{DB: db}
 }
 
-// Create User (Admin)
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	role := r.Context().Value(middleware.RoleContextKey).(string)
 	if role != "admin" {
@@ -58,7 +57,6 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user.SafeResponse())
 }
 
-// Get Current User
 func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(middleware.UserIDContextKey).(uint)
 
@@ -71,7 +69,6 @@ func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user.SafeResponse())
 }
 
-// List Users (Admin)
 func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	role := r.Context().Value(middleware.RoleContextKey).(string)
 	if role != "admin" {
@@ -93,7 +90,6 @@ func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-// Update User (Admin)
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	role := r.Context().Value(middleware.RoleContextKey).(string)
 	if role != "admin" {
@@ -137,7 +133,6 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user.SafeResponse())
 }
 
-// Delete User (Admin)
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {
