@@ -162,7 +162,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
         }
 
         if (mode === "edit") {
-          const userId = data.id || data.ID;
+          const userId = data.id;
           const payload = {
             username: form.username,
             email: form.email,
@@ -191,7 +191,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
         }
 
         if (mode === "edit") {
-          const creatorId = data.id || data.ID;
+          const creatorId = data.id;
           await apiFetch(`/creators/update?id=${creatorId}`, {
             method: "PUT",
             body: JSON.stringify({
@@ -215,7 +215,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
         }
 
         if (mode === "edit") {
-          const artworkId = data.id || data.ID;
+          const artworkId = data.id;
           await apiFetch(`/artworks/update?id=${artworkId}`, {
             method: "PUT",
             body: JSON.stringify({
@@ -240,7 +240,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
         }
 
         if (mode === "edit") {
-          const requestId = data.id || data.ID;
+          const requestId = data.id;
           await apiFetch(`/requests/update?id=${requestId}`, {
             method: "PUT",
             body: JSON.stringify({
@@ -266,22 +266,22 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
 
     try {
       if (isUser) {
-        const userId = data.id || data.ID;
+        const userId = data.id;
         await apiFetch(`/users/delete?id=${userId}`, {
           method: "DELETE",
         });
       } else if (isCreator) {
-        const creatorId = data.id || data.ID;
+        const creatorId = data.id;
         await apiFetch(`/creators/delete?id=${creatorId}`, {
           method: "DELETE",
         });
       } else if (isArtwork) {
-        const artworkId = data.id || data.ID;
+        const artworkId = data.id;
         await apiFetch(`/artworks/delete?id=${artworkId}`, {
           method: "DELETE",
         });
       } else if (isRequest) {
-        const requestId = data.id || data.ID;
+        const requestId = data.id;
         await apiFetch(`/requests/delete?id=${requestId}`, {
           method: "DELETE",
         });
@@ -313,21 +313,21 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
           <div className="space-y-3">
             <div>
               <label className="text-xs text-gray-600 block mb-1">ID</label>
-              <p className="border p-2 bg-gray-50">{data?.id || data?.ID}</p>
+              <p className="border p-2 bg-gray-50">{data?.id}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
                 Username
               </label>
-              <p className="border p-2 bg-gray-50">{form.username}</p>
+              <p className="border p-2 bg-gray-50">{data?.username}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">Email</label>
-              <p className="border p-2 bg-gray-50">{form.email}</p>
+              <p className="border p-2 bg-gray-50">{data?.email}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">Role</label>
-              <p className="border p-2 bg-gray-50">{form.role}</p>
+              <p className="border p-2 bg-gray-50">{data?.role}</p>
             </div>
             {data?.created_at && (
               <div>
@@ -389,7 +389,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
           <div className="space-y-3">
             <div>
               <label className="text-xs text-gray-600 block mb-1">ID</label>
-              <p className="border p-2 bg-gray-50">{data?.id || data?.ID}</p>
+              <p className="border p-2 bg-gray-50">{data?.id}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
@@ -399,13 +399,13 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">Bio</label>
-              <p className="border p-2 bg-gray-50">{form.bio || "-"}</p>
+              <p className="border p-2 bg-gray-50">{data?.bio || "-"}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
                 Website
               </label>
-              <p className="border p-2 bg-gray-50">{form.website || "-"}</p>
+              <p className="border p-2 bg-gray-50">{data?.website || "-"}</p>
             </div>
             {data?.created_at && (
               <div>
@@ -428,7 +428,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
             >
               <option value="">Select User</option>
               {users.map((u) => (
-                <option key={u.id || u.ID} value={u.id || u.ID}>
+                <option key={u.id} value={u.id}>
                   {u.username} ({u.email})
                 </option>
               ))}
@@ -458,7 +458,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
           <div className="space-y-3">
             <div>
               <label className="text-xs text-gray-600 block mb-1">ID</label>
-              <p className="border p-2 bg-gray-50">{data?.id || data?.ID}</p>
+              <p className="border p-2 bg-gray-50">{data?.id}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
@@ -468,19 +468,21 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">Title</label>
-              <p className="border p-2 bg-gray-50">{form.title}</p>
+              <p className="border p-2 bg-gray-50">{data?.title || "-"}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
                 Description
               </label>
-              <p className="border p-2 bg-gray-50">{form.description || "-"}</p>
+              <p className="border p-2 bg-gray-50">
+                {data?.description || "-"}
+              </p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
                 Media URL
               </label>
-              <p className="border p-2 bg-gray-50">{form.media_url || "-"}</p>
+              <p className="border p-2 bg-gray-50">{data?.media_url || "-"}</p>
             </div>
             {data?.created_at && (
               <div>
@@ -503,8 +505,8 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
             >
               <option value="">Select Creator</option>
               {creators.map((c) => (
-                <option key={c.id || c.ID} value={c.id || c.ID}>
-                  Creator #{c.id || c.ID} (User ID: {c.user_id || c.UserID})
+                <option key={c.id} value={c.id}>
+                  Creator #{c.id} (User ID: {c.user_id})
                 </option>
               ))}
             </select>
@@ -543,7 +545,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
           <div className="space-y-3">
             <div>
               <label className="text-xs text-gray-600 block mb-1">ID</label>
-              <p className="border p-2 bg-gray-50">{data?.id || data?.ID}</p>
+              <p className="border p-2 bg-gray-50">{data?.id}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
@@ -559,17 +561,19 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">Title</label>
-              <p className="border p-2 bg-gray-50">{form.request_title}</p>
+              <p className="border p-2 bg-gray-50">{data?.title || "-"}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">
                 Details
               </label>
-              <p className="border p-2 bg-gray-50">{form.details || "-"}</p>
+              <p className="border p-2 bg-gray-50">{data?.details || "-"}</p>
             </div>
             <div>
               <label className="text-xs text-gray-600 block mb-1">Status</label>
-              <p className="border p-2 bg-gray-50">{form.status}</p>
+              <p className="border p-2 bg-gray-50">
+                {data?.status || "pending"}
+              </p>
             </div>
             {data?.created_at && (
               <div>
@@ -592,7 +596,7 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
             >
               <option value="">Select Client (User)</option>
               {users.map((u) => (
-                <option key={u.id || u.ID} value={u.id || u.ID}>
+                <option key={u.id} value={u.id}>
                   {u.username} ({u.email})
                 </option>
               ))}
@@ -608,8 +612,8 @@ export default function DataModal({ title, mode, data, onClose, onSuccess }) {
             >
               <option value="">Select Creator</option>
               {creators.map((c) => (
-                <option key={c.id || c.ID} value={c.id || c.ID}>
-                  Creator #{c.id || c.ID} (User ID: {c.user_id || c.UserID})
+                <option key={c.id} value={c.id}>
+                  Creator #{c.id} (User ID: {c.user_id})
                 </option>
               ))}
             </select>
