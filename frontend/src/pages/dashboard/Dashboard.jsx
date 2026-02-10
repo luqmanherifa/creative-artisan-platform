@@ -1,6 +1,8 @@
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./Sidebar";
+import DashboardNavbar from "../../components/DashboardNavbar";
+import Footer from "../../components/Footer";
 import DataModal from "../../components/DataModal/DataModal";
 import { logout } from "../../utils/auth";
 import { useAuthRole } from "../../hooks/useAuthRole";
@@ -10,7 +12,6 @@ export default function Dashboard() {
   const role = useAuthRole();
   const navigate = useNavigate();
   const location = useLocation();
-
   const [modal, setModal] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -27,25 +28,32 @@ export default function Dashboard() {
 
   const openModal = (type, mode, data) => setModal({ type, mode, data });
 
-  return (
-    <div className="flex min-h-screen">
-      <Sidebar
-        menus={menus}
-        active={location.pathname.split("/")[2]}
-        onSelect={(key) => navigate(`/dashboard/${key}`)}
-        onLogout={() => {
-          logout();
-          navigate("/login", { replace: true });
-        }}
-      />
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
 
-      <main className="flex-1 p-6">
-        <Routes>
-          {dashboardRoutes(openModal, refreshKey).map((r) => (
-            <Route key={r.path} {...r} />
-          ))}
-        </Routes>
-      </main>
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <DashboardNavbar onLogout={handleLogout} />
+
+      <div className="flex flex-1">
+        <Sidebar
+          menus={menus}
+          active={location.pathname.split("/")[2]}
+          onSelect={(key) => navigate(`/dashboard/${key}`)}
+        />
+
+        <main className="flex-1 p-8">
+          <div className="max-w-7xl mx-auto">
+            <Routes>
+              {dashboardRoutes(openModal, refreshKey).map((r) => (
+                <Route key={r.path} {...r} />
+              ))}
+            </Routes>
+          </div>
+        </main>
+      </div>
 
       {modal && (
         <DataModal
@@ -56,6 +64,8 @@ export default function Dashboard() {
           }}
         />
       )}
+
+      <Footer />
     </div>
   );
 }
