@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -7,7 +9,6 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,7 +16,6 @@ export default function Register() {
       const timer = setTimeout(() => {
         navigate("/login");
       }, 1500);
-
       return () => clearTimeout(timer);
     }
   }, [success, navigate]);
@@ -23,19 +23,16 @@ export default function Register() {
   const submit = async (e) => {
     e.preventDefault();
     setError("");
-
     try {
       const res = await fetch("http://localhost:8080/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
       });
-
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "register failed");
+        throw new Error(text || "Registration failed");
       }
-
       setSuccess(true);
     } catch (err) {
       setError(err.message);
@@ -43,47 +40,86 @@ export default function Register() {
   };
 
   return (
-    <form onSubmit={submit} className="p-6 max-w-sm">
-      <h1 className="text-xl font-bold mb-4">Register</h1>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
 
-      {error && <p className="text-red-500 mb-2">{error}</p>}
+      <div className="flex-1 flex items-center justify-center bg-gray-50 px-4 py-8">
+        <div className="bg-white p-8 rounded-lg shadow-sm border max-w-md w-full">
+          <h1 className="text-2xl font-bold mb-6 text-gray-900">Register</h1>
 
-      {success && (
-        <p className="text-green-600 text-sm mb-2">
-          Registration successful. Redirecting to login...
-        </p>
-      )}
+          {error && (
+            <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">
+              {error}
+            </div>
+          )}
 
-      <input
-        className="border p-2 w-full mb-2"
-        placeholder="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
+          {success && (
+            <div className="bg-green-50 text-green-600 p-3 rounded mb-4 text-sm">
+              Registration successful. Redirecting to login...
+            </div>
+          )}
 
-      <input
-        className="border p-2 w-full mb-2"
-        placeholder="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
+          <form onSubmit={submit}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                className="border border-gray-300 p-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
 
-      <input
-        type="password"
-        className="border p-2 w-full mb-2"
-        placeholder="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                className="border border-gray-300 p-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-      <button className="border px-4 py-2 w-full mb-2">Register</button>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                className="border border-gray-300 p-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-      <Link to="/login" className="text-sm underline">
-        Already have an account? Login
-      </Link>
-    </form>
+            <button className="bg-blue-600 text-white px-4 py-3 w-full rounded hover:bg-blue-700 font-medium">
+              Register
+            </button>
+          </form>
+
+          <p className="text-center mt-4 text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-blue-600 hover:underline font-medium"
+            >
+              Login
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      <Footer />
+    </div>
   );
 }
