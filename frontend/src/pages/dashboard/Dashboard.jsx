@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   const menus = [
     { key: "users", label: "Users", roles: ["admin"] },
-    { key: "creators", label: "Creators", roles: ["admin", "creator"] },
+    { key: "creators", label: "Artisans", roles: ["admin", "creator"] },
     { key: "artworks", label: "Artworks", roles: ["admin", "creator"] },
     {
       key: "requests",
@@ -28,7 +28,7 @@ export default function Dashboard() {
   const openModal = (type, mode, data) => setModal({ type, mode, data });
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 font-['Inter']">
       <Navbar />
 
       <div className="flex flex-1">
@@ -38,8 +38,8 @@ export default function Dashboard() {
           onSelect={(key) => navigate(`/dashboard/${key}`)}
         />
 
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-x-hidden">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Routes>
               {dashboardRoutes(openModal, refreshKey).map((r) => (
                 <Route key={r.path} {...r} />
