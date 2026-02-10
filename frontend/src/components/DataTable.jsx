@@ -46,16 +46,21 @@ export default function DataTable({
         <table className="w-full">
           <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
             <tr>
-              {columns.map((col) => (
-                <th
-                  key={col}
-                  className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                >
-                  {formatColumnName(col)}
-                </th>
-              ))}
+              {columns.map((col) => {
+                const formattedName = formatColumnName(col);
+                return (
+                  <th
+                    key={col}
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  >
+                    <div className="line-clamp-1" title={formattedName}>
+                      {formattedName}
+                    </div>
+                  </th>
+                );
+              })}
               <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Actions
+                <div className="line-clamp-1">Actions</div>
               </th>
             </tr>
           </thead>
@@ -75,7 +80,12 @@ export default function DataTable({
                       key={`${rowKey}-${col}`}
                       className="px-6 py-4 text-sm text-gray-900"
                     >
-                      {String(row[col])}
+                      <div
+                        className="line-clamp-1 max-w-xs"
+                        title={String(row[col])}
+                      >
+                        {String(row[col])}
+                      </div>
                     </td>
                   ))}
                   <td className="px-6 py-4">

@@ -105,8 +105,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl text-indigo-100 mb-8 leading-relaxed">
-              Connect with talented artisans specializing in unique creative
-              crafts and custom artworks
+              Connect with artisans specializing in unique crafts and artworks
             </p>
           </div>
 
