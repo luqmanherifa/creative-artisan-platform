@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../../api/api";
+import { FormInput, FormTextarea, FormSelect } from "../../Form/FormField";
 
 export default function CreatorForm({ mode, data, onClose, onSuccess }) {
   const [users, setUsers] = useState([]);
@@ -8,6 +9,7 @@ export default function CreatorForm({ mode, data, onClose, onSuccess }) {
     bio: "",
     website: "",
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     apiFetch("/users").then(setUsers);
@@ -21,67 +23,75 @@ export default function CreatorForm({ mode, data, onClose, onSuccess }) {
     }
   }, [mode, data]);
 
-  const submit = async () => {
-    const payload = {
-      user_id: parseInt(form.user_id),
-      bio: form.bio,
-      website: form.website,
-    };
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-    if (mode === "create") {
-      await apiFetch("/creators", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
+    try {
+      const payload = {
+        user_id: parseInt(form.user_id),
+        bio: form.bio,
+        website: form.website,
+      };
+
+      if (mode === "create") {
+        await apiFetch("/creators", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+      }
+
+      if (mode === "edit") {
+        await apiFetch(`/creators/update?id=${data.id}`, {
+          method: "PUT",
+          body: JSON.stringify(payload),
+        });
+      }
+
+      onSuccess?.("Creator");
+      onClose();
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert("Failed to save artisan. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    if (mode === "edit") {
-      await apiFetch(`/creators/update?id=${data.id}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
-    }
-
-    onClose();
-    onSuccess?.("Creator");
   };
 
   return (
-    <div className="space-y-2">
-      <select
-        className="border p-2 w-full"
+    <form id="creator-form" onSubmit={submit} className="space-y-4">
+      <FormSelect
+        label="User Account"
+        required
         value={form.user_id}
         onChange={(e) => setForm({ ...form, user_id: e.target.value })}
+        disabled={loading || mode === "edit"}
       >
-        <option value="">Select User</option>
+        <option value="">Select a user</option>
         {users.map((u) => (
           <option key={u.id} value={u.id}>
             {u.username} ({u.email})
           </option>
         ))}
-      </select>
+      </FormSelect>
 
-      <textarea
-        className="border p-2 w-full"
-        rows={3}
-        placeholder="Bio"
+      <FormTextarea
+        label="Bio"
+        rows={4}
+        placeholder="Tell us about this artisan..."
         value={form.bio}
         onChange={(e) => setForm({ ...form, bio: e.target.value })}
+        disabled={loading}
       />
 
-      <input
-        className="border p-2 w-full"
-        placeholder="Website"
+      <FormInput
+        label="Website"
+        type="url"
+        placeholder="https://example.com"
         value={form.website}
         onChange={(e) => setForm({ ...form, website: e.target.value })}
+        disabled={loading}
       />
-
-      <button
-        onClick={submit}
-        className="bg-blue-500 text-white px-3 py-1 text-sm"
-      >
-        Save
-      </button>
-    </div>
+    </form>
   );
 }
